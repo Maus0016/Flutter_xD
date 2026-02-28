@@ -37,6 +37,11 @@ class _JogosPageState extends State<JogosPage> {
 
   Stream<List<Map<String, dynamic>>>? _gamesStream;
 
+  // CORES DO SEU LOGIN
+  final Color backgroundDark = const Color(0xFF0F0F0F);
+  final Color surfaceDark = const Color(0xFF1A1A1A);
+  final Color accentColor = const Color(0xFF03DAC6);
+
   @override
   void initState() {
     super.initState();
@@ -100,6 +105,7 @@ class _JogosPageState extends State<JogosPage> {
       });
     }
   }
+
   Future<void> _selecionarData() async {
     if (!mounted) return;
     FocusScope.of(context).unfocus();
@@ -111,11 +117,11 @@ class _JogosPageState extends State<JogosPage> {
       lastDate: DateTime(2030),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF0D47A1),
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
+          data: ThemeData.dark().copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: accentColor,
+              onPrimary: Colors.black,
+              surface: surfaceDark,
             ),
           ),
           child: child!,
@@ -131,6 +137,7 @@ class _JogosPageState extends State<JogosPage> {
   void _abrirPainelConvites() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: surfaceDark,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
@@ -142,35 +149,41 @@ class _JogosPageState extends State<JogosPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
+                  Text(
                     "MEUS CONVITES",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF0D47A1),
+                      color: accentColor,
                     ),
                   ),
-                  const Divider(),
+                  const Divider(color: Colors.white10),
                   if (_meusConvites.isEmpty)
                     const Padding(
                       padding: EdgeInsets.all(20.0),
-                      child: Text("Nenhum convite novo."),
+                      child: Text(
+                        "Nenhum convite novo.",
+                        style: TextStyle(color: Colors.white24),
+                      ),
                     ),
                   ..._meusConvites.map(
                     (inv) => ListTile(
-                      leading: const Icon(
-                        Icons.mail_outline,
-                        color: Colors.blue,
+                      leading: Icon(Icons.mail_outline, color: accentColor),
+                      title: Text(
+                        inv['game_name'],
+                        style: const TextStyle(color: Colors.white),
                       ),
-                      title: Text(inv['game_name']),
-                      subtitle: Text("De: ${inv['sender_name']}"),
+                      subtitle: Text(
+                        "De: ${inv['sender_name']}",
+                        style: const TextStyle(color: Colors.white54),
+                      ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             icon: const Icon(
                               Icons.check_circle,
-                              color: Colors.green,
+                              color: Colors.greenAccent,
                             ),
                             onPressed: () async {
                               await _entrarNoJogo(inv['game_id'].toString());
@@ -180,11 +193,14 @@ class _JogosPageState extends State<JogosPage> {
                                   .eq('id', inv['id']);
                               await _buscarConvites();
                               if (mounted) Navigator.pop(context);
-                              _notificar("Convite aceito!", Colors.green);
+                              _notificar("Convite aceito!", Colors.greenAccent);
                             },
                           ),
                           IconButton(
-                            icon: const Icon(Icons.cancel, color: Colors.red),
+                            icon: const Icon(
+                              Icons.cancel,
+                              color: Colors.redAccent,
+                            ),
                             onPressed: () async {
                               await _supabase
                                   .from('invites')
@@ -210,6 +226,7 @@ class _JogosPageState extends State<JogosPage> {
   void _abrirListaParaConvidar(Map<String, dynamic> game) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: surfaceDark,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
@@ -220,21 +237,23 @@ class _JogosPageState extends State<JogosPage> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              const Text(
+              Text(
                 "CONVIDAR JOGADORES",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0D47A1),
+                  color: accentColor,
                 ),
               ),
-              const Divider(),
+              const Divider(color: Colors.white10),
               Expanded(
                 child: FutureBuilder<List<Map<String, dynamic>>>(
                   future: _supabase.from('profiles').select('id, username'),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting)
-                      return const Center(child: CircularProgressIndicator());
+                      return Center(
+                        child: CircularProgressIndicator(color: accentColor),
+                      );
                     final usuarios = snapshot.data ?? [];
                     final meuId = _supabase.auth.currentUser?.id;
                     final outrosJogadores = usuarios
@@ -245,11 +264,15 @@ class _JogosPageState extends State<JogosPage> {
                       itemBuilder: (context, i) {
                         final userRow = outrosJogadores[i];
                         return ListTile(
-                          leading: const CircleAvatar(
-                            child: Icon(Icons.person),
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.white10,
+                            child: Icon(Icons.person, color: accentColor),
                           ),
-                          title: Text(userRow['username'] ?? "Jogador"),
-                          trailing: const Icon(Icons.send, color: Colors.blue),
+                          title: Text(
+                            userRow['username'] ?? "Jogador",
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          trailing: Icon(Icons.send, color: accentColor),
                           onTap: () async {
                             try {
                               await _supabase.from('invites').insert({
@@ -260,9 +283,9 @@ class _JogosPageState extends State<JogosPage> {
                                 'sender_name': _meuUsername,
                               });
                               if (mounted) Navigator.pop(context);
-                              _notificar("Convite enviado!", Colors.green);
+                              _notificar("Convite enviado!", accentColor);
                             } catch (e) {
-                              _notificar("Erro ao enviar.", Colors.red);
+                              _notificar("Erro ao enviar.", Colors.redAccent);
                             }
                           },
                         );
@@ -286,13 +309,14 @@ class _JogosPageState extends State<JogosPage> {
         'user_name': _meuUsername,
       });
     } catch (e) {
-      _notificar('Você já está na lista!', Colors.orange);
+      _notificar('Você já está na lista!', Colors.orangeAccent);
     }
   }
 
   void _abrirSala(Map<String, dynamic> game) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: surfaceDark,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
@@ -313,15 +337,12 @@ class _JogosPageState extends State<JogosPage> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF0D47A1),
+                        color: Colors.white,
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(
-                      Icons.person_add_alt_1,
-                      color: Colors.blue,
-                    ),
+                    icon: Icon(Icons.person_add_alt_1, color: accentColor),
                     onPressed: () {
                       Navigator.pop(context);
                       _abrirListaParaConvidar(game);
@@ -329,7 +350,7 @@ class _JogosPageState extends State<JogosPage> {
                   ),
                 ],
               ),
-              const Divider(),
+              const Divider(color: Colors.white10),
               Expanded(
                 child: FutureBuilder<List<Map<String, dynamic>>>(
                   future: _supabase
@@ -338,7 +359,9 @@ class _JogosPageState extends State<JogosPage> {
                       .eq('game_id', game['id']),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting)
-                      return const Center(child: CircularProgressIndicator());
+                      return Center(
+                        child: CircularProgressIndicator(color: accentColor),
+                      );
                     final lista = snapshot.data ?? [];
                     bool euJaEstouNaLista = lista.any(
                       (p) => p['user_id'] == meuId,
@@ -348,7 +371,10 @@ class _JogosPageState extends State<JogosPage> {
                         Expanded(
                           child: lista.isEmpty
                               ? const Center(
-                                  child: Text("Ninguém confirmou ainda."),
+                                  child: Text(
+                                    "Ninguém confirmou ainda.",
+                                    style: TextStyle(color: Colors.white24),
+                                  ),
                                 )
                               : ListView.builder(
                                   itemCount: lista.length,
@@ -358,10 +384,15 @@ class _JogosPageState extends State<JogosPage> {
                                       leading: Icon(
                                         Icons.check_circle,
                                         color: isMe
-                                            ? Colors.blue
-                                            : Colors.green,
+                                            ? accentColor
+                                            : Colors.greenAccent,
                                       ),
-                                      title: Text(lista[i]['user_name']),
+                                      title: Text(
+                                        lista[i]['user_name'],
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                      ),
                                     );
                                   },
                                 ),
@@ -370,7 +401,7 @@ class _JogosPageState extends State<JogosPage> {
                         if (!euJaEstouNaLista)
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: Colors.greenAccent,
                               minimumSize: const Size(double.infinity, 50),
                             ),
                             onPressed: () => _entrarNoJogo(
@@ -378,13 +409,16 @@ class _JogosPageState extends State<JogosPage> {
                             ).then((_) => Navigator.pop(context)),
                             child: const Text(
                               "CONFIRMAR PRESENÇA",
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           )
                         else
                           OutlinedButton(
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.red),
+                              side: const BorderSide(color: Colors.redAccent),
                               minimumSize: const Size(double.infinity, 50),
                             ),
                             onPressed: () => _sairDoJogo(
@@ -392,7 +426,10 @@ class _JogosPageState extends State<JogosPage> {
                             ).then((_) => Navigator.pop(context)),
                             child: const Text(
                               "SAIR DA LISTA",
-                              style: TextStyle(color: Colors.red),
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                       ],
@@ -413,55 +450,58 @@ class _JogosPageState extends State<JogosPage> {
         'game_id': gameId,
         'user_id': _supabase.auth.currentUser!.id,
       });
-      _notificar('Você saiu da lista.', Colors.grey);
+      _notificar('Você saiu da lista.', Colors.white24);
     } catch (e) {
-      _notificar('Erro ao sair.', Colors.red);
+      _notificar('Erro ao sair.', Colors.redAccent);
     }
   }
+
   Future<void> _salvarJogo() async {
     final nomeFinal =
         "$_esporteSelecionado - ${_dataSelecionada.day}/${_dataSelecionada.month} - $_horarioSelecionado";
     setState(() => _isLoading = true);
     try {
       await _supabase.from('games').insert({'name': nomeFinal});
-      _notificar('Partida criada!', Colors.green);
+      _notificar('Partida criada!', accentColor);
     } catch (e) {
-      _notificar('Erro ao criar.', Colors.red);
+      _notificar('Erro ao criar.', Colors.redAccent);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
+
   void _notificar(String msg, Color cor) {
     if (!mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: cor));
   }
+
   @override
   Widget build(BuildContext context) {
     if (!_initialized) {
-      return const Scaffold(
-        backgroundColor: Color(0xFF1B263B),
-        body: Center(child: CircularProgressIndicator(color: Colors.white)),
+      return Scaffold(
+        backgroundColor: backgroundDark,
+        body: const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
       );
     }
     return Scaffold(
-      backgroundColor: const Color(0xFF1B263B),
+      backgroundColor: backgroundDark,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: surfaceDark,
+        elevation: 0,
         title: const Text(
           'Arena de Jogos',
-          style: TextStyle(
-            color: Color(0xFF0D47A1),
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
           Stack(
             alignment: Alignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications, color: Colors.blue),
+                icon: Icon(Icons.notifications, color: accentColor),
                 onPressed: _abrirPainelConvites,
               ),
               if (_meusConvites.isNotEmpty)
@@ -471,7 +511,7 @@ class _JogosPageState extends State<JogosPage> {
                   child: Container(
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: Colors.red,
+                      color: Colors.redAccent,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     constraints: const BoxConstraints(
@@ -500,6 +540,7 @@ class _JogosPageState extends State<JogosPage> {
       ),
       body: RefreshIndicator(
         onRefresh: _buscarConvites,
+        color: accentColor,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
@@ -514,10 +555,10 @@ class _JogosPageState extends State<JogosPage> {
                 ),
               ),
               const SizedBox(height: 25),
-              const Text(
+              Text(
                 "CRIAR NOVA PARTIDA",
                 style: TextStyle(
-                  color: Colors.blueAccent,
+                  color: accentColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),
@@ -525,10 +566,10 @@ class _JogosPageState extends State<JogosPage> {
               const SizedBox(height: 10),
               _buildFormulario(),
               const SizedBox(height: 30),
-              const Text(
+              Text(
                 "PARTIDAS ATIVAS",
                 style: TextStyle(
-                  color: Colors.blueAccent,
+                  color: accentColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                 ),
@@ -546,8 +587,9 @@ class _JogosPageState extends State<JogosPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surfaceDark,
         borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.white10),
       ),
       child: Column(
         children: [
@@ -569,11 +611,12 @@ class _JogosPageState extends State<JogosPage> {
           const SizedBox(height: 10),
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.calendar_today, color: Colors.blue),
+            leading: Icon(Icons.calendar_today, color: accentColor),
             title: Text(
               "Data: ${_dataSelecionada.day}/${_dataSelecionada.month}",
+              style: const TextStyle(color: Colors.white),
             ),
-            trailing: const Icon(Icons.edit, size: 16),
+            trailing: const Icon(Icons.edit, size: 16, color: Colors.white24),
             onTap: _selecionarData,
           ),
           _buildDrop(
@@ -587,14 +630,17 @@ class _JogosPageState extends State<JogosPage> {
           ElevatedButton(
             onPressed: _isLoading ? null : _salvarJogo,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0D47A1),
+              backgroundColor: accentColor,
               minimumSize: const Size(double.infinity, 50),
             ),
             child: _isLoading
-                ? const CircularProgressIndicator()
+                ? const CircularProgressIndicator(color: Colors.black)
                 : const Text(
                     "PUBLICAR JOGO",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
           ),
         ],
@@ -611,9 +657,15 @@ class _JogosPageState extends State<JogosPage> {
   ) {
     return DropdownButtonFormField<String>(
       value: value,
+      dropdownColor: surfaceDark,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Colors.blue),
+        labelStyle: const TextStyle(color: Colors.white54),
+        prefixIcon: Icon(icon, color: accentColor),
+        enabledBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.white10),
+        ),
       ),
       items: items
           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -633,7 +685,7 @@ class _JogosPageState extends State<JogosPage> {
           return const Center(
             child: Text(
               "Nenhuma partida ativa.",
-              style: TextStyle(color: Colors.white54),
+              style: TextStyle(color: Colors.white24),
             ),
           );
         return ListView.builder(
@@ -643,28 +695,40 @@ class _JogosPageState extends State<JogosPage> {
           itemBuilder: (context, index) {
             final g = games[index];
             return Card(
+              color: surfaceDark,
               margin: const EdgeInsets.only(bottom: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Colors.white10),
               ),
               child: ListTile(
                 onTap: () => _abrirSala(g),
-                leading: const CircleAvatar(
-                  backgroundColor: Color(0xFFE3F2FD),
-                  child: Icon(Icons.sports_soccer, color: Colors.blue),
+                leading: CircleAvatar(
+                  backgroundColor: Colors.white10,
+                  child: Icon(Icons.sports_soccer, color: accentColor),
                 ),
                 title: Text(
                   g['name'],
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-                subtitle: const Text("Toque para ver detalhes"),
+                subtitle: const Text(
+                  "Toque para ver detalhes",
+                  style: TextStyle(color: Colors.white38),
+                ),
                 trailing: _isAdmin
                     ? IconButton(
                         icon: const Icon(Icons.delete, color: Colors.redAccent),
                         onPressed: () =>
                             _supabase.from('games').delete().eq('id', g['id']),
                       )
-                    : const Icon(Icons.arrow_forward_ios, size: 14),
+                    : Icon(
+                        Icons.arrow_forward_ios,
+                        size: 14,
+                        color: accentColor,
+                      ),
               ),
             );
           },

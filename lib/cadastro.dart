@@ -15,8 +15,10 @@ class _CadastroPageState extends State<CadastroPage> {
   bool loading = false;
   bool _senhaVisivel = false;
 
-  final Color azulEscuro = const Color(0xFF0D47A1);
-  final Color azulMedio = const Color(0xFF1976D2);
+  // Paleta Dark Modern
+  final Color backgroundDark = const Color(0xFF121212);
+  final Color surfaceDark = const Color(0xFF1E1E1E);
+  final Color accentColor = const Color(0xFF03DAC6); // Ciano Neon
 
   Future<void> cadastrar() async {
     FocusScope.of(context).unfocus();
@@ -33,7 +35,6 @@ class _CadastroPageState extends State<CadastroPage> {
     setState(() => loading = true);
 
     try {
-
       final AuthResponse res = await Supabase.instance.client.auth.signUp(
         email: email,
         password: senha,
@@ -42,23 +43,19 @@ class _CadastroPageState extends State<CadastroPage> {
 
       final user = res.user;
 
-     
       if (user != null) {
         await Supabase.instance.client.from('profiles').upsert({
           'id': user.id,
-          'username': nome, 
+          'username': nome,
           'is_admin': false,
         });
 
         if (!mounted) return;
 
         if (res.session == null) {
-          _notificar(
-            'Cadastro realizado! Verifique seu e-mail para confirmar.',
-            Colors.blue,
-          );
+          _notificar('Cadastro realizado! Verifique seu e-mail.', accentColor);
         } else {
-          _notificar('Bem-vindo, $nome!', Colors.green);
+          _notificar('Bem-vindo, $nome!', Colors.greenAccent);
         }
 
         Navigator.pop(context);
@@ -75,9 +72,9 @@ class _CadastroPageState extends State<CadastroPage> {
   void _notificar(String msg, Color cor) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg),
+        content: Text(msg, style: const TextStyle(color: Colors.white)),
         backgroundColor: cor,
-        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -85,156 +82,168 @@ class _CadastroPageState extends State<CadastroPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundDark,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: accentColor),
       ),
-      body: Container(
+      body: SizedBox(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [azulEscuro, azulMedio],
-          ),
-        ),
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(28),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.person_add_alt_1_rounded,
-                  size: 80,
-                  color: Colors.white,
+                  size: 70,
+                  color: accentColor,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 15),
                 const Text(
-                  "Criar Conta",
+                  "NOVA CONTA",
                   style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
                     color: Colors.white,
-                    letterSpacing: 1.2,
+                    letterSpacing: 2.0,
                   ),
                 ),
                 const Text(
-                  "Preencha os dados abaixo",
-                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                  "Junte-se à arena agora",
+                  style: TextStyle(color: Colors.white38, fontSize: 14),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 40),
+
+                // Card de Formulário Dark
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 15,
-                        offset: Offset(0, 5),
-                      ),
-                    ],
+                    color: surfaceDark,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white10),
                   ),
                   child: Column(
                     children: [
-                      TextField(
+                      _buildTextField(
                         controller: nomeController,
-                        textCapitalization: TextCapitalization
-                            .words, 
-                        decoration: InputDecoration(
-                          labelText: "Nome Completo",
-                          prefixIcon: Icon(
-                            Icons.person_outline,
-                            color: azulMedio,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                        label: "Nome Completo",
+                        icon: Icons.person_outline,
+                        capitalization: TextCapitalization.words,
                       ),
                       const SizedBox(height: 20),
-                      TextField(
+                      _buildTextField(
                         controller: emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          labelText: "E-mail",
-                          prefixIcon: Icon(
-                            Icons.email_outlined,
-                            color: azulMedio,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                        label: "E-mail",
+                        icon: Icons.email_outlined,
+                        type: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 20),
-                      TextField(
+                      _buildTextField(
                         controller: senhaController,
-                        obscureText: !_senhaVisivel,
-                        decoration: InputDecoration(
-                          labelText: "Senha",
-                          prefixIcon: Icon(
-                            Icons.lock_outline,
-                            color: azulMedio,
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _senhaVisivel
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () =>
-                                setState(() => _senhaVisivel = !_senhaVisivel),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                        label: "Senha",
+                        icon: Icons.lock_outline,
+                        isPassword: true,
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 35),
+
+                      // Botão Principal
                       SizedBox(
                         width: double.infinity,
                         height: 55,
                         child: ElevatedButton(
                           onPressed: loading ? null : cadastrar,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: azulEscuro,
-                            foregroundColor: Colors.white,
+                            backgroundColor: accentColor,
+                            foregroundColor: Colors.black,
+                            elevation: 0,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(15),
                             ),
                           ),
                           child: loading
                               ? const CircularProgressIndicator(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 )
                               : const Text(
-                                  "FINALIZAR CADASTRO",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  "CRIAR CONTA",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 1.2,
+                                  ),
                                 ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    "Já tem uma conta? Faça login",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
+                  child: RichText(
+                    text: TextSpan(
+                      text: "Já possui uma conta? ",
+                      style: const TextStyle(color: Colors.white54),
+                      children: [
+                        TextSpan(
+                          text: "Login",
+                          style: TextStyle(
+                            color: accentColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool isPassword = false,
+    TextInputType type = TextInputType.text,
+    TextCapitalization capitalization = TextCapitalization.none,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword ? !_senhaVisivel : false,
+      keyboardType: type,
+      textCapitalization: capitalization,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.white38, fontSize: 14),
+        prefixIcon: Icon(icon, color: accentColor, size: 22),
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  _senhaVisivel ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.white38,
+                ),
+                onPressed: () => setState(() => _senhaVisivel = !_senhaVisivel),
+              )
+            : null,
+        filled: true,
+        fillColor: backgroundDark.withOpacity(0.5),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: Colors.white10),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(color: accentColor, width: 1.5),
         ),
       ),
     );
