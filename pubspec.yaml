@@ -1,0 +1,28 @@
+name: flutte
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Adicionado para resolver o erro do DatePicker e traduzir o app
+  flutter_localizations:
+    sdk: flutter
+    
+  provider: ^6.1.5
+  supabase_flutter: ^2.12.0
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
