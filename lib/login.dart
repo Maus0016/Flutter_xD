@@ -17,6 +17,13 @@ class _LoginPageState extends State<LoginPage> {
   bool loading = false;
   bool _senhaVisivel = false;
 
+  @override
+  void dispose() {
+    emailController.dispose();
+    senhaController.dispose();
+    super.dispose();
+  }
+
   final Color backgroundDark = const Color(
     0xFF0F0F0F,
   ); // Um pouco mais profundo
