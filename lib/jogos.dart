@@ -16,7 +16,6 @@ class _JogosPageState extends State<JogosPage> {
   bool _initialized = false;
   String _meuUsername = "";
 
-  // PALETA DARK PREMIUM
   final Color backgroundDark = const Color(0xFF0F0F0F);
   final Color surfaceDark = const Color(0xFF1A1A1A);
   final Color accentColor = const Color(0xFF03DAC6);
@@ -45,6 +44,11 @@ class _JogosPageState extends State<JogosPage> {
   void initState() {
     super.initState();
     _inicializarPagina();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Future<void> _inicializarPagina() async {
@@ -108,8 +112,6 @@ class _JogosPageState extends State<JogosPage> {
     );
   }
 
-  // --- LÓGICA DE GESTÃO DE PARTIDAS ---
-
   Future<void> _salvarJogo() async {
     final nomeFinal =
         "$_esporteSelecionado - ${_dataSelecionada.day}/${_dataSelecionada.month} - $_horarioSelecionado";
@@ -158,8 +160,6 @@ class _JogosPageState extends State<JogosPage> {
     }
   }
 
-  // --- INTERFACE PRINCIPAL ---
-
   @override
   Widget build(BuildContext context) {
     if (!_initialized)
@@ -168,7 +168,6 @@ class _JogosPageState extends State<JogosPage> {
         body: Center(child: CircularProgressIndicator(color: accentColor)),
       );
 
-    // Define se a tela usa o layout de colunas (Lado a Lado)
     bool isWide = MediaQuery.of(context).size.width > 800;
 
     return Scaffold(
@@ -220,10 +219,8 @@ class _JogosPageState extends State<JogosPage> {
             Expanded(
               child: isWide
                   ? Row(
-                      // VISÃO LADO A LADO (Dashboard)
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ESQUERDA: FORMULÁRIO
                         Expanded(
                           flex: 4,
                           child: SingleChildScrollView(
@@ -237,7 +234,6 @@ class _JogosPageState extends State<JogosPage> {
                           ),
                         ),
                         const SizedBox(width: 30),
-                        // DIREITA: LISTA
                         Expanded(
                           flex: 6,
                           child: Column(
@@ -251,7 +247,6 @@ class _JogosPageState extends State<JogosPage> {
                       ],
                     )
                   : SingleChildScrollView(
-                      // VISÃO EMPILHADA (Celular)
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -467,11 +462,7 @@ class _JogosPageState extends State<JogosPage> {
               child: ListTile(
                 onTap: () => _abrirSala(g),
                 dense: true,
-                leading: Icon(
-                  Icons.sports_soccer,
-                  color: accentColor,
-                  size: 20,
-                ),
+                leading: Icon(Icons.sports, color: accentColor, size: 20),
                 title: Text(
                   g['name'],
                   style: const TextStyle(
@@ -505,8 +496,6 @@ class _JogosPageState extends State<JogosPage> {
       },
     );
   }
-
-  // --- MODAIS (CONVITES, SALA E CONVIDAR) ---
 
   Future<void> _selecionarData() async {
     final DateTime? colhida = await showDatePicker(
@@ -754,7 +743,7 @@ class _JogosPageState extends State<JogosPage> {
                         ),
                       ),
                       trailing: Icon(
-                        Icons.send_rounded,
+                        Icons.send_outlined,
                         color: accentColor,
                         size: 18,
                       ),

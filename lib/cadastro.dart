@@ -15,13 +15,12 @@ class _CadastroPageState extends State<CadastroPage> {
   bool loading = false;
   bool _senhaVisivel = false;
 
-  // Paleta Dark Modern
   final Color backgroundDark = const Color(
     0xFF0F0F0F,
-  ); // Sincronizado com a JogosPage
+  ); 
   final Color surfaceDark = const Color(
     0xFF1A1A1A,
-  ); // Sincronizado com a JogosPage
+  ); 
   final Color accentColor = const Color(0xFF03DAC6);
 
   Future<void> cadastrar() async {
@@ -97,26 +96,25 @@ class _CadastroPageState extends State<CadastroPage> {
         iconTheme: IconThemeData(color: accentColor),
       ),
       body: Center(
-        // Centraliza tudo na tela
         child: Container(
           constraints: const BoxConstraints(
             maxWidth: 400,
-          ), // Limita a largura para não "esparramar"
+          ), 
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(30),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.person_add_alt_1_rounded,
-                  size: 60, // Diminuído levemente
+                  Icons.person_add_alt_1,
+                  size: 60,
                   color: accentColor,
                 ),
                 const SizedBox(height: 15),
                 const Text(
                   "NOVA CONTA",
                   style: TextStyle(
-                    fontSize: 22, // Mais compacto
+                    fontSize: 22, 
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
                     letterSpacing: 2.0,
@@ -127,10 +125,8 @@ class _CadastroPageState extends State<CadastroPage> {
                   style: TextStyle(color: Colors.white38, fontSize: 13),
                 ),
                 const SizedBox(height: 35),
-
-                // Card de Formulário
                 Container(
-                  padding: const EdgeInsets.all(20), // Padding interno reduzido
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: surfaceDark,
                     borderRadius: BorderRadius.circular(20),
@@ -159,11 +155,9 @@ class _CadastroPageState extends State<CadastroPage> {
                         isPassword: true,
                       ),
                       const SizedBox(height: 30),
-
-                      // Botão Principal
                       SizedBox(
                         width: double.infinity,
-                        height: 48, // Altura mais elegante
+                        height: 48,
                         child: ElevatedButton(
                           onPressed: loading ? null : cadastrar,
                           style: ElevatedButton.styleFrom(
@@ -254,7 +248,7 @@ class _CadastroPageState extends State<CadastroPage> {
               )
             : null,
         filled: true,
-        fillColor: const Color(0xFF0F0F0F), // Background interno dos campos
+        fillColor: const Color(0xFF0F0F0F),
         contentPadding: const EdgeInsets.symmetric(vertical: 15),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

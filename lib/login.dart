@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
 
   final Color backgroundDark = const Color(
     0xFF0F0F0F,
-  ); // Um pouco mais profundo
+  ); 
   final Color surfaceDark = const Color(0xFF1A1A1A);
   final Color accentColor = const Color(0xFF03DAC6);
 
@@ -70,11 +70,10 @@ class _LoginPageState extends State<LoginPage> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(
                 maxWidth: 400,
-              ), // Limita largura em telas grandes
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Novo Logo: Minimalista e Moderno
                   Container(
                     height: 100,
                     width: 100,
@@ -87,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     child: Icon(
-                      Icons.shield_moon_outlined, // Ícone mais "Premium"
+                      Icons.shield_moon_outlined,
                       size: 50,
                       color: accentColor,
                     ),
@@ -109,7 +108,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 48),
 
-                  // Campos com Padding Interno Ajustado
                   _buildTextField(
                     controller: emailController,
                     label: "E-mail",
@@ -132,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {}, // Esqueci minha senha
+                      onPressed: () {}, 
                       child: const Text(
                         "Esqueceu a senha?",
                         style: TextStyle(color: Colors.white30, fontSize: 12),
@@ -141,8 +139,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
 
                   const SizedBox(height: 24),
-
-                  // Botão com altura fixa de 50px (Padrão de acessibilidade)
                   SizedBox(
                     width: double.infinity,
                     height: 50,
