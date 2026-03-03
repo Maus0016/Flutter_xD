@@ -168,7 +168,6 @@ class _JogosPageState extends State<JogosPage> {
         backgroundColor: backgroundDark,
         body: Center(child: CircularProgressIndicator(color: accentColor)),
       );
-
     bool isWide = MediaQuery.of(context).size.width > 800;
 
     return Scaffold(
@@ -188,6 +187,7 @@ class _JogosPageState extends State<JogosPage> {
         ),
         actions: [
           _buildBadgeIcon(),
+          
           IconButton(
             icon: const Icon(
               Icons.logout_rounded,
@@ -570,6 +570,7 @@ class _JogosPageState extends State<JogosPage> {
                         .delete()
                         .eq('id', inv['id']);
                     _buscarConvites();
+                    if (!context.mounted) return;
                     Navigator.pop(context);
                   },
                 ),
@@ -670,7 +671,8 @@ class _JogosPageState extends State<JogosPage> {
                           ),
                           onPressed: () => _entrarNoJogo(
                             game['id'].toString(),
-                          ).then((_) => Navigator.pop(context)),
+                          )
+                          .then((_) => Navigator.pop(context)),
                           child: const Text(
                             "CONFIRMAR PRESENÇA",
                             style: TextStyle(
@@ -757,6 +759,7 @@ class _JogosPageState extends State<JogosPage> {
                           'game_name': game['name'],
                           'sender_name': _meuUsername,
                         });
+                        if (!context.mounted) return;
                         Navigator.pop(context);
                         _notificar("Convite enviado!", Colors.green);
                       },
