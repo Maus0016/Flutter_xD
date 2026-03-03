@@ -15,12 +15,8 @@ class _CadastroPageState extends State<CadastroPage> {
   bool loading = false;
   bool _senhaVisivel = false;
 
-  final Color backgroundDark = const Color(
-    0xFF0F0F0F,
-  ); 
-  final Color surfaceDark = const Color(
-    0xFF1A1A1A,
-  ); 
+  final Color backgroundDark = const Color(0xFF0F0F0F);
+  final Color surfaceDark = const Color(0xFF1A1A1A);
   final Color accentColor = const Color(0xFF03DAC6);
 
   Future<void> cadastrar() async {
@@ -97,24 +93,18 @@ class _CadastroPageState extends State<CadastroPage> {
       ),
       body: Center(
         child: Container(
-          constraints: const BoxConstraints(
-            maxWidth: 400,
-          ), 
+          constraints: const BoxConstraints(maxWidth: 400),
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(30),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.person_add_alt_1,
-                  size: 60,
-                  color: accentColor,
-                ),
+                Icon(Icons.person_add_alt_1, size: 60, color: accentColor),
                 const SizedBox(height: 15),
                 const Text(
                   "NOVA CONTA",
                   style: TextStyle(
-                    fontSize: 22, 
+                    fontSize: 22,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
                     letterSpacing: 2.0,
@@ -130,7 +120,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   decoration: BoxDecoration(
                     color: surfaceDark,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.05)),
+                    border: Border.all(color: Colors.white54),
                   ),
                   child: Column(
                     children: [

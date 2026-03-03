@@ -24,9 +24,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  final Color backgroundDark = const Color(
-    0xFF0F0F0F,
-  ); 
+  final Color backgroundDark = const Color(0xFF0F0F0F);
   final Color surfaceDark = const Color(0xFF1A1A1A);
   final Color accentColor = const Color(0xFF03DAC6);
 
@@ -68,9 +66,7 @@ class _LoginPageState extends State<LoginPage> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 400,
-              ),
+              constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -78,12 +74,9 @@ class _LoginPageState extends State<LoginPage> {
                     height: 100,
                     width: 100,
                     decoration: BoxDecoration(
-                      color: accentColor.withOpacity(0.05),
+                      color: accentColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: accentColor.withOpacity(0.2),
-                        width: 1,
-                      ),
+                      border: Border.all(color: accentColor, width: 1),
                     ),
                     child: Icon(
                       Icons.shield_moon_outlined,
@@ -130,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {}, 
+                      onPressed: () {},
                       child: const Text(
                         "Esqueceu a senha?",
                         style: TextStyle(color: Colors.white30, fontSize: 12),
@@ -245,7 +238,7 @@ class _LoginPageState extends State<LoginPage> {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: accentColor.withOpacity(0.5),
+            color: accentColor.withValues(alpha: 0.5),
             width: 1.5,
           ),
         ),

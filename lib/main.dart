@@ -22,12 +22,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Meu App de Quadras',
+      title: 'Risk Tournament',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
 
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -35,12 +32,8 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('pt', 'BR')],
-      locale: const Locale(
-        'pt',
-        'BR',
-      ),
+      locale: const Locale('pt', 'BR'),
 
- 
       initialRoute: '/',
       routes: {
         '/': (context) => const AuthCheck(),

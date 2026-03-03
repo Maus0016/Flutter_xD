@@ -15,17 +15,16 @@ class PrincipalPage extends StatelessWidget {
             icon: const Icon(Icons.logout),
             onPressed: () async {
               await Supabase.instance.client.auth.signOut();
+              if (!context.mounted) return;
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const LoginPage()),
               );
             },
-          )
+          ),
         ],
       ),
-      body: const Center(
-        child: Text("Usuário logado!"),
-      ),
+      body: const Center(child: Text("Usuário logado!")),
     );
   }
 }

@@ -26,7 +26,7 @@ class _JogosPageState extends State<JogosPage> {
   String _horarioSelecionado = '08:00';
   DateTime _dataSelecionada = DateTime.now();
 
-  final List<String> _esportes = ['Futebol', 'Vôlei', 'Handebol'];
+  final List<String> _esportes = ['Futebol', 'Futsal', 'Vôlei', 'Handebol'];
   final List<String> _locais = [
     'Ginásio',
     'Oktober',
@@ -46,20 +46,15 @@ class _JogosPageState extends State<JogosPage> {
     _inicializarPagina();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   Future<void> _inicializarPagina() async {
     try {
       final user = _supabase.auth.currentUser;
       if (user == null) {
-        if (mounted)
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const LoginPage()),
-          );
+        if (context.mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+        );
         return;
       }
       final data = await _supabase
@@ -67,7 +62,7 @@ class _JogosPageState extends State<JogosPage> {
           .select('username, is_admin')
           .eq('id', user.id)
           .maybeSingle();
-      if (mounted) {
+      if (context.mounted) {
         setState(() {
           _isAdmin = data?['is_admin'] == true;
           _meuUsername =
@@ -88,20 +83,26 @@ class _JogosPageState extends State<JogosPage> {
     }
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _buscarConvites() async {
     final user = _supabase.auth.currentUser;
+
     if (user == null) return;
     final data = await _supabase
         .from('invites')
         .select()
         .eq('receiver_id', user.id)
         .eq('status', 'pending');
-    if (mounted)
-      setState(() => _meusConvites = List<Map<String, dynamic>>.from(data));
+    if (!context.mounted) return;
+    setState(() => _meusConvites = List<Map<String, dynamic>>.from(data));
   }
 
   void _notificar(String msg, Color cor) {
-    if (!mounted) return;
+    if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg, style: const TextStyle(fontSize: 12)),
@@ -270,7 +271,7 @@ class _JogosPageState extends State<JogosPage> {
     child: Text(
       text,
       style: TextStyle(
-        color: accentColor.withOpacity(0.4),
+        color: accentColor.withValues(),
         fontWeight: FontWeight.bold,
         fontSize: 10,
         letterSpacing: 1.2,
@@ -322,7 +323,7 @@ class _JogosPageState extends State<JogosPage> {
       decoration: BoxDecoration(
         color: surfaceDark,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white24),
       ),
       child: Column(
         children: [
@@ -437,7 +438,7 @@ class _JogosPageState extends State<JogosPage> {
         if (!snapshot.hasData)
           return Center(child: CircularProgressIndicator(color: accentColor));
         final games = snapshot.data!;
-        if (games.isEmpty)
+        if (games.isEmpty) {
           return const Center(
             child: Padding(
               padding: EdgeInsets.all(20),
@@ -447,6 +448,7 @@ class _JogosPageState extends State<JogosPage> {
               ),
             ),
           );
+        }
         return ListView.builder(
           shrinkWrap: true,
           physics: const BouncingScrollPhysics(),
