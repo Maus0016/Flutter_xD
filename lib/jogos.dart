@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
@@ -164,11 +166,14 @@ class _JogosPageState extends State<JogosPage> {
   @override
   Widget build(BuildContext context) {
     if (!_initialized)
+      
+    
       return Scaffold(
         backgroundColor: backgroundDark,
         body: Center(child: CircularProgressIndicator(color: accentColor)),
       );
     bool isWide = MediaQuery.of(context).size.width > 800;
+    
 
     return Scaffold(
       backgroundColor: backgroundDark,
@@ -187,7 +192,7 @@ class _JogosPageState extends State<JogosPage> {
         ),
         actions: [
           _buildBadgeIcon(),
-          
+
           IconButton(
             icon: const Icon(
               Icons.logout_rounded,
@@ -196,7 +201,7 @@ class _JogosPageState extends State<JogosPage> {
             ),
             onPressed: () => _supabase.auth.signOut().then(
               (_) => Navigator.pushReplacement(
-                context,
+                mounted(),
                 MaterialPageRoute(builder: (_) => const LoginPage()),
               ),
             ),
@@ -671,8 +676,7 @@ class _JogosPageState extends State<JogosPage> {
                           ),
                           onPressed: () => _entrarNoJogo(
                             game['id'].toString(),
-                          )
-                          .then((_) => Navigator.pop(context)),
+                          ).then((_) => Navigator.pop(mounted())),
                           child: const Text(
                             "CONFIRMAR PRESENÇA",
                             style: TextStyle(
@@ -689,7 +693,7 @@ class _JogosPageState extends State<JogosPage> {
                           ),
                           onPressed: () => _sairDoJogo(
                             game['id'].toString(),
-                          ).then((_) => Navigator.pop(context)),
+                          ).then((_) => Navigator.pop(mounted())),
                           child: const Text(
                             "SAIR DA LISTA",
                             style: TextStyle(color: Colors.redAccent),
@@ -730,41 +734,50 @@ class _JogosPageState extends State<JogosPage> {
               child: FutureBuilder<List<Map<String, dynamic>>>(
                 future: _supabase.from('profiles').select('id, username'),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData)
-                    return const Center(child: CircularProgressIndicator());
-                  final lista = (snapshot.data ?? [])
-                      .where((u) => u['id'] != _supabase.auth.currentUser?.id)
-                      .toList();
-                  return ListView.builder(
-                    itemCount: lista.length,
-                    itemBuilder: (context, i) => ListTile(
-                      dense: true,
-                      title: Text(
-                        lista[i]['username'],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
+                  Widget meuWidget = Center(child: CircularProgressIndicator());
+
+                  if (!snapshot.hasData) {
+                    return meuWidget;
+                  } else {
+                    final lista = (snapshot.data ?? [])
+                        .where((u) => u['id'] != _supabase.auth.currentUser?.id)
+                        .toList();
+                    meuWidget = ListView.builder(
+                      itemCount: lista.length,
+                      itemBuilder: (context, i) => ListTile(
+                        dense: true,
+                        title: Text(
+                          lista[i]['username'],
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                          ),
                         ),
+                        trailing: Icon(
+                          Icons.send_outlined,
+                          color: accentColor,
+                          size: 18,
+                        ),
+                        onTap: () async {
+                          try {
+                            await _supabase.from('invites').insert({
+                              'game_id': game['id'],
+                              'sender_id': _supabase.auth.currentUser!.id,
+                              'receiver_id': lista[i]['id'],
+                              'game_name': game['name'],
+                              'sender_name': _meuUsername,
+                            });
+                          } catch (e) {
+                            print("e: $e");
+                          }
+                          if (!context.mounted) return;
+                          Navigator.pop(context);
+                          _notificar("Convite enviado!", Colors.green);
+                        },
                       ),
-                      trailing: Icon(
-                        Icons.send_outlined,
-                        color: accentColor,
-                        size: 18,
-                      ),
-                      onTap: () async {
-                        await _supabase.from('invites').insert({
-                          'game_id': game['id'],
-                          'sender_id': _supabase.auth.currentUser!.id,
-                          'receiver_id': lista[i]['id'],
-                          'game_name': game['name'],
-                          'sender_name': _meuUsername,
-                        });
-                        if (!context.mounted) return;
-                        Navigator.pop(context);
-                        _notificar("Convite enviado!", Colors.green);
-                      },
-                    ),
-                  );
+                    );
+                    return meuWidget;
+                  }
                 },
               ),
             ),
