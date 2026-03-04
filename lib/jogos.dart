@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
-
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login.dart';
@@ -166,14 +164,11 @@ class _JogosPageState extends State<JogosPage> {
   @override
   Widget build(BuildContext context) {
     if (!_initialized)
-      
-    
       return Scaffold(
         backgroundColor: backgroundDark,
         body: Center(child: CircularProgressIndicator(color: accentColor)),
       );
     bool isWide = MediaQuery.of(context).size.width > 800;
-    
 
     return Scaffold(
       backgroundColor: backgroundDark,
@@ -201,7 +196,7 @@ class _JogosPageState extends State<JogosPage> {
             ),
             onPressed: () => _supabase.auth.signOut().then(
               (_) => Navigator.pushReplacement(
-                mounted(),
+                context,
                 MaterialPageRoute(builder: (_) => const LoginPage()),
               ),
             ),
@@ -676,7 +671,7 @@ class _JogosPageState extends State<JogosPage> {
                           ),
                           onPressed: () => _entrarNoJogo(
                             game['id'].toString(),
-                          ).then((_) => Navigator.pop(mounted())),
+                          ).then((_) => Navigator.pop(context)),
                           child: const Text(
                             "CONFIRMAR PRESENÇA",
                             style: TextStyle(
@@ -693,7 +688,7 @@ class _JogosPageState extends State<JogosPage> {
                           ),
                           onPressed: () => _sairDoJogo(
                             game['id'].toString(),
-                          ).then((_) => Navigator.pop(mounted())),
+                          ).then((_) => Navigator.pop(context)),
                           child: const Text(
                             "SAIR DA LISTA",
                             style: TextStyle(color: Colors.redAccent),
